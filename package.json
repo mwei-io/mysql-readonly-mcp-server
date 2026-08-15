@@ -1,0 +1,22 @@
+{
+  "name": "mysql-readonly-mcp-server",
+  "version": "1.0.0",
+  "description": "只读 MySQL MCP Server：SELECT/SHOW 查询、表结构与表清单查看",
+  "type": "module",
+  "main": "dist/index.js",
+  "bin": { "mysql-readonly-mcp-server": "dist/index.js" },
+  "scripts": {
+    "build": "tsup"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "mysql2": "^3.11.0",
+    "node-sql-parser": "^5.3.0",
+    "zod": "^3.24.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "tsup": "^8.3.0",
+    "typescript": "^5.7.0"
+  }
+}
