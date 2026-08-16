@@ -2,5 +2,3 @@ node_modules/
 dist/
 logs/
 *.log
-config.json
-.aicoding-chat-workspace

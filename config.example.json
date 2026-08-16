@@ -1,24 +1,23 @@
 {
-  "defaultLimit": 10,
   "maxLimit": 1000,
   "connections": {
-    "order-db": {
-      "host": "127.0.0.1",
-      "port": 3306,
-      "user": "readonly_user",
-      "password": "${MYSQL_READONLY_PASSWORD}",
-      "database": "orders"
-    },
     "user-db": {
       "host": "127.0.0.1",
       "port": 3306,
       "user": "readonly_user",
       "password": "${MYSQL_READONLY_PASSWORD}",
-      "database": "users"
+      "database": "users,logs"
+    },
+    "log-db": {
+      "host": "127.0.0.2",
+      "port": 3307,
+      "user": "readonly_user",
+      "password": "${MYSQL_LOG_PASSWORD}",
+      "database": "logs"
     }
   },
   "log": {
-    "enabled": true,
+    "enabled": false,
     "level": "info",
     "dir": "./logs",
     "keepDays": 7

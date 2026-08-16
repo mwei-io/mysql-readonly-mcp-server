@@ -11,6 +11,50 @@ const ALLOWED_AST_TYPES = new Set(['select', 'explain']);
 /** DESCRIBE 快捷路径：desc/describe 后接单个标识符 */
 const DESCRIBE_PATTERN = /^(desc|describe)\s+[^\s;]+$/i;
 
+/**
+ * 扫描 SQL 中的裸分号并检测注释，感知字符串/反引号边界：
+ * - 字符串与反引号内的分号属字面量，不影响单语句判定
+ * - 注释一律拒绝：MySQL 会执行版本注释（叹号开头的块注释）而解析器会丢弃全部注释，
+ *   两者语义偏差可被利用（如把 INTO OUTFILE 藏进版本注释），fail-closed 直接拦截
+ */
+function scanSemicolonAndComment(sql: string): { hasBareSemicolon: boolean; hasComment: boolean } {
+  let hasBareSemicolon = false;
+  let hasComment = false;
+  let i = 0;
+  const n = sql.length;
+  while (i < n) {
+    const ch = sql[i];
+    // 进入字符串/反引号字面量，成对引号或反斜杠转义内跳至闭合
+    if (ch === "'" || ch === '"' || ch === '`') {
+      const quote = ch;
+      i += 1;
+      while (i < n) {
+        if (sql[i] === '\\') i += 2;
+        else if (sql[i] === quote) i += 1;
+        else i += 1;
+      }
+      continue;
+    }
+    // 块注释（含版本注释 /*!...*/）
+    if (ch === '/' && sql[i + 1] === '*') {
+      hasComment = true;
+      i += 2;
+      while (i < n && !(sql[i] === '*' && sql[i + 1] === '/')) i += 1;
+      i += 2;
+      continue;
+    }
+    // 行注释：--（MySQL 要求后随空白或行尾）与 #
+    if ((ch === '-' && sql[i + 1] === '-' && (sql[i + 2] === undefined || /[\s]/.test(sql[i + 2]))) || ch === '#') {
+      hasComment = true;
+      while (i < n && sql[i] !== '\n') i += 1;
+      continue;
+    }
+    if (ch === ';') hasBareSemicolon = true;
+    i += 1;
+  }
+  return { hasBareSemicolon, hasComment };
+}
+
 export interface GuardResult {
   allowed: boolean;
   reason?: string;
@@ -24,9 +68,13 @@ export function checkReadOnly(sql: string): GuardResult {
   if (!normalized) {
     return { allowed: false, reason: 'SQL 不能为空' };
   }
-  // 分号前置拦截：字符串/注释内的分号同样拒绝，属保守的 fail-closed 策略（宁可误杀不可漏放）
-  if (normalized.includes(';')) {
+  // 裸分号与注释前置拦截（感知字符串边界）：注释会制造校验器与 MySQL 的语义偏差，宁可误杀不可漏放
+  const { hasBareSemicolon, hasComment } = scanSemicolonAndComment(normalized);
+  if (hasBareSemicolon) {
     return { allowed: false, reason: '仅允许执行单条 SQL 语句，检测到多条语句' };
+  }
+  if (hasComment) {
+    return { allowed: false, reason: '禁止 SQL 中包含注释（含 /*!...*/ 版本注释），防止绕过只读校验' };
   }
   // DESCRIBE 快捷路径：node-sql-parser 对 DESC 语法支持有限，该模式无注入面
   if (DESCRIBE_PATTERN.test(normalized)) return { allowed: true, normalized };
@@ -56,5 +104,12 @@ export function checkReadOnly(sql: string): GuardResult {
   if (stmt.type === 'select' && hasInto) {
     return { allowed: false, reason: '禁止 SELECT ... INTO 语法（OUTFILE/DUMPFILE/变量赋值）' };
   }
-  return { allowed: true, ast: stmt, normalized };
+  // 执行 SQL 以 AST 重建结果为准：确保实际执行的正是校验过的只读语义，杜绝任何文本层面的歧义
+  let rebuilt: string;
+  try {
+    rebuilt = parser.sqlify(stmt as never, { database: 'MySQL' });
+  } catch (e) {
+    return { allowed: false, reason: `SQL 重建失败，已拒绝执行：${(e as Error).message}` };
+  }
+  return { allowed: true, ast: stmt, normalized: rebuilt };
 }

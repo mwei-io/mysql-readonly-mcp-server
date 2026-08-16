@@ -35,6 +35,8 @@ export class PoolManager {
         connectionLimit: 2,
         connectTimeout: 10000,
         enableKeepAlive: true,
+        // 只读安全底线：协议层禁止多语句执行，防止分号拼接堆叠写操作
+        multipleStatements: false,
       });
       this.pools.set(name, pool);
     }

@@ -17,8 +17,8 @@ const LEVEL_WEIGHT: Record<LogLevel, number> = { debug: 0, info: 1, warn: 2, err
 /** 日志文件命名前缀 */
 const LOG_FILE_PREFIX = 'mysql-mcp-';
 
-/** 当前生效的日志配置（默认值兜底） */
-let config: LogConfig = { enabled: true, level: 'info', dir: './logs', keepDays: 7 };
+/** 当前生效的日志配置（默认值兜底：enabled 默认 false） */
+let config: LogConfig = { enabled: false, level: 'info', dir: './logs', keepDays: 7 };
 
 /** 初始化日志器：保存配置、创建日志目录并清理过期文件 */
 export function initLogger(c: LogConfig): void {
@@ -29,8 +29,8 @@ export function initLogger(c: LogConfig): void {
   }
 }
 
-/** 清理超过 keepDays 的日志文件；keepDays<=0 时不清理 */
-export function cleanupExpiredLogs(): void {
+/** 清理超过 keepDays 的日志文件；keepDays<=0 时不清理（仅内部使用） */
+function cleanupExpiredLogs(): void {
   if (config.keepDays <= 0) return;
   const cutoff = Date.now() - config.keepDays * 86400000;
   for (const name of fs.readdirSync(config.dir)) {

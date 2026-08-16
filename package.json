@@ -1,12 +1,42 @@
 {
   "name": "mysql-readonly-mcp-server",
   "version": "1.0.0",
-  "description": "只读 MySQL MCP Server：SELECT/SHOW 查询、表结构与表清单查看",
+  "description": "只读 MySQL MCP Server：让 Agent 安全地执行 SELECT/SHOW 查询，查看数据库、表清单与表结构，支持多库连接与 SQL 只读校验",
   "type": "module",
   "main": "dist/index.js",
   "bin": { "mysql-readonly-mcp-server": "dist/index.js" },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "scripts": {
-    "build": "tsup"
+    "build": "tsup",
+    "prepare": "npm run build"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "mcp-server",
+    "mysql",
+    "readonly",
+    "read-only",
+    "sql",
+    "query",
+    "database",
+    "ai-agent"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mwei-io/mysql-readonly-mcp-server.git"
+  },
+  "homepage": "https://github.com/mwei-io/mysql-readonly-mcp-server#readme",
+  "bugs": {
+    "url": "https://github.com/mwei-io/mysql-readonly-mcp-server/issues"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.0",
