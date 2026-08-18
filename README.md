@@ -6,8 +6,8 @@
 
 | 文档 | 内容 |
 |------|------|
-| [安装](./docs/install.md) | npx 直接运行（推荐）与源码构建两种方式 |
-| [配置方式](./docs/configuration.md) | 环境变量 / 命令行参数 / 配置文件三种配置方式及优先级 |
+| [安装](./docs/install.md) | 全局安装（推荐） / 临时运行 / 源码构建三种方式 |
+| [配置方式](./docs/configuration.md) | 环境变量（推荐） / 命令行参数 / 配置文件三种配置方式及优先级 |
 
 ## ✨ 功能特性
 
@@ -60,7 +60,10 @@ FLUSH PRIVILEGES;
   "mcpServers": {
     "mysql-readonly": {
       "command": "npx",
-      "args": ["-y", "mysql-readonly-mcp-server"],
+      "args": [
+        "-y",
+        "mysql-readonly-mcp-server"
+      ],
       "env": {
         "MYSQL_HOST": "127.0.0.1",
         "MYSQL_PORT": "3306",

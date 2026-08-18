@@ -61,7 +61,10 @@
   "mcpServers": {
     "mysql-readonly": {
       "command": "npx",
-      "args": ["-y", "mysql-readonly-mcp-server"],
+      "args": [
+        "-y", 
+        "mysql-readonly-mcp-server"
+      ],
       "env": {
         "MYSQL_HOST": "127.0.0.1",
         "MYSQL_PORT": "3306",
@@ -81,7 +84,10 @@
   "mcpServers": {
     "mysql-readonly": {
       "command": "npx",
-      "args": ["-y", "mysql-readonly-mcp-server"],
+      "args": [
+        "-y", 
+        "mysql-readonly-mcp-server"
+      ],
       "env": {
         "MYSQL_HOST": "127.0.0.1",
         "MYSQL_USER": "readonly_user",
@@ -100,9 +106,12 @@
 ```json
 {
   "mcpServers": {
-    "mysql-db1": {
+    "mysql-server1": {
       "command": "npx",
-      "args": ["-y", "mysql-readonly-mcp-server"],
+      "args": [
+        "-y", 
+        "mysql-readonly-mcp-server"
+      ],
       "env": {
         "MYSQL_HOST": "127.0.0.1",
         "MYSQL_USER": "readonly_db1",
@@ -110,9 +119,12 @@
         "MYSQL_DATABASE": "db1"
       }
     },
-    "mysql-db2": {
+    "mysql-server2": {
       "command": "npx",
-      "args": ["-y", "mysql-readonly-mcp-server"],
+      "args": [
+        "-y", 
+        "mysql-readonly-mcp-server"
+      ],
       "env": {
         "MYSQL_HOST": "127.0.0.2",
         "MYSQL_PORT": "3307",
@@ -198,9 +210,22 @@
 ```json
 {
   "mcpServers": {
-    "mysql-db": {
+    "mysql-readonly": {
       "command": "npx",
-      "args": ["-y", "mysql-readonly-mcp-server", "--max-limit", "50", "--log-enabled", "true", "--log-level", "info", "--log-dir", "./logs", "--log-keep-days", "7"],
+      "args": [
+        "-y", 
+        "mysql-readonly-mcp-server",
+        "--max-limit",
+        "50",
+        "--log-enabled",
+        "true", 
+        "--log-level",
+        "info", 
+        "--log-dir",
+        "./logs", 
+        "--log-keep-days", 
+        "7"
+      ],
       "env": {
         "MYSQL_HOST": "127.0.0.1",
         "MYSQL_USER": "readonly_user",
@@ -242,14 +267,14 @@
 {
   "maxLimit": 1000,
   "connections": {
-    "user-db": {
+    "user-server": {
       "host": "127.0.0.1",
       "port": 3306,
       "user": "readonly_user",
       "password": "${MYSQL_READONLY_PASSWORD}",
       "database": "users,logs"
     },
-    "log-db": {
+    "log-server": {
       "host": "127.0.0.2",
       "port": 3307,
       "user": "readonly_user",

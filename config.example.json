@@ -1,14 +1,14 @@
 {
   "maxLimit": 1000,
   "connections": {
-    "user-db": {
+    "user-server": {
       "host": "127.0.0.1",
       "port": 3306,
       "user": "readonly_user",
       "password": "${MYSQL_READONLY_PASSWORD}",
       "database": "users,logs"
     },
-    "log-db": {
+    "log-server": {
       "host": "127.0.0.2",
       "port": 3307,
       "user": "readonly_user",
